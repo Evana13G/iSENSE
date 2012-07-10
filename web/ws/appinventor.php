@@ -26,11 +26,7 @@ function getResults($method){
                //Do processing and return
                return $result;
 }
-        
-        
-
-
-
+        // Hi
 
 if(isset($_REQUEST['method'])) {
         $method = safeString($_REQUEST['method']);
