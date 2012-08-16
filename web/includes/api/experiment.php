@@ -104,68 +104,82 @@ function updateExperiment($eid, $values) {
 }
 
 function hideExperiment($eid) {
-	global $db;
-	
-	$output = $db->query("UPDATE experiments SET experiments.hidden = 1 WHERE experiments.experiment_id = {$eid}");
-	
-	if($db->numOfRows) {
-	    updateTimeModifiedForExperiment($eid);
-		return true;
-	}
-	
-	return false;
+     global $db;
+     
+     $output = $db->query("UPDATE experiments SET experiments.hidden = 1 WHERE experiments.experiment_id = {$eid}");
+     
+     if($db->numOfRows) {
+          updateTimeModifiedForExperiment($eid);
+          return true;
+     }
+     
+     return false;
 }
 
 function unhideExperiment($eid) {
-	global $db;
-	
-	$output = $db->query("UPDATE experiments SET experiments.hidden = 0 WHERE experiments.experiment_id = {$eid}");
-	
-	if($db->numOfRows) {
-	    updateTimeModifiedForExperiment($eid);
-		return true;
-	}
-	
-	return false;
+     global $db;
+     
+     $output = $db->query("UPDATE experiments SET experiments.hidden = 0 WHERE experiments.experiment_id = {$eid}");
+     
+     if($db->numOfRows) {
+          updateTimeModifiedForExperiment($eid);
+          return true;
+     }
+     
+     return false;
 }
 
 function addFeaturedExperiment($eid) {
-	global $db;
-	
-	$db->query("UPDATE experiments SET featured = 1 WHERE experiment_id = {$eid}");
-	
-	$output = $db->query("SELECT name from experiments WHERE experiment_id = {$eid}");
-	
-	$name = "";
-	if($db->numOfRows) {
-		$name = $output[0]['name'];
-	}
-	
-	if($name != "") {
-		publishToTwitter('Latest Featured Experiment: "'.$name.'" - http://isense.cs.uml.edu/rc1/experiment.php?id='.$eid);
-	}
-	
-	updateTimeModifiedForExperiment($eid);
-	
-	return true;
+     global $db;
+     
+     if(doesExperimentExist($eid) {
+               $db->query("UPDATE experiments SET featured = 1 WHERE experiment_id = {$eid}");
+     
+               $output = $db->query("SELECT name from experiments WHERE experiment_id = {$eid}");
+     
+               $name = "";
+               if($db->numOfRows) {
+                         $name = $output[0]['name'];
+               }
+     
+               if($name != "") {
+                         publishToTwitter('Latest Featured Experiment: "'.$name.'" - http://isense.cs.uml.edu/rc1/experiment.php?id='.$eid);
+               }
+     
+               updateTimeModifiedForExperiment($eid);
+     
+               return true;
+     }
+     
+     return false;
 }
 
 function removeFeaturedExperiment($eid) {
-	global $db;
-	
-	$db->query("UPDATE experiments SET featured = 0 WHERE experiment_id = {$eid}");
-	
-	updateTimeModifiedForExperiment($eid);
-	
-	return true;
+     global $db;
+     
+     if(doesExperimentExist($eid) {
+     
+               $db->query("UPDATE experiments SET featured = 0 WHERE experiment_id = {$eid}");
+     
+               updateTimeModifiedForExperiment($eid);
+     
+               return true;
+     }
+     
+          return false;
 }
 
 function rateExperiment($eid, $value) {
-	global $db;
-	
-	$db->query("UPDATE experiments SET rating = rating + {$value}, rating_votes = rating_votes + 1 WHERE experiment_id = {$eid}");
-		
-	return true;
+     global $db;
+     
+     if(doesExperimentExist($eid) {
+     
+               $db->query("UPDATE experiments SET rating = rating + {$value}, rating_votes = rating_votes + 1 WHERE experiment_id = {$eid}");
+               return true;          
+
+               }
+          
+     return false;
 }
 
 function countNumberOfSessions($eid) {
@@ -635,6 +649,25 @@ function unrecommendExperiment($eid){
     $output = $db->query($sql);
 
     return true;
+}
+
+function doesExperimentExist($eid) {
+
+     //access to the database
+     global $db;
+
+     //build string for query 
+     $sql = "SELECT eid FROM experiments WHERE experiment_id={$eid}";
+     
+     $output = $db->query($sql);
+     
+     if (isset($output[0])) {
+          if (isset($output['eid'])) {
+               return true;
+          }
+     } 
+     return false;
+     
 }
 
 ?>

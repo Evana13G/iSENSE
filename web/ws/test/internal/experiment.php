@@ -58,129 +58,134 @@ function test_getExperiment() {
      printResult( __FUNCTION__, $pass);
 }
 
-function test_hideUnhideExperiment() {
+function test_hideExperiment() {
     
     $pass = true;
     
+    //test experiment with valid param
     $eid = 1;
+    hideExperiment($eid);
     $experiment = getExperiment($eid);
-    $isHidden = $experiment['hidden'];
-    
-    // if the experiment is already hidden,
-    // unhide and and test to see that its 
-    // 'hidden' value is indeed 0 
-    
-    if ( $isHidden == 1 ) {
-          unhideExperiment($eid);
-          $experiment = getExperiment($eid);
-          if( $experiment['hidden'] == 0) {
-               $pass = true;
-          } else {
-               $pass = false;
-          }
-     }
-     
-    // if the experiment is not hidden,
-    // hide and and test to see that its 
-    // 'hidden' value is indeed 1     
-      if ( $isHidden == 0 ) {
-          hideExperiment($eid);
-          $experiment = getExperiment($eid);
-          if( $experiment['hidden'] == 1) {
-               $pass = true;
-          } else {
-               $pass = false;
-          }
-     }
-     
-     //test experiment with invalid param
-     $eid = -1;
-     $experiment = getExperiment($eid);
-     
-     if ($experiment != null) {
+    if($experiment) {
+          if ($experiment['hidden'] != 1) {
+                    $pass = false;
+          }          
+    } else {
+          return "check getExperiment function"; 
+    }
+          
+     //test experiment with invalid param    
+     $eid = -1; 
+     $experiment = hideExperiment($eid);    
+     if ($experiment) {
           $pass = false;
-     }
-     
-     
+     }     
+
      printResult( __FUNCTION__, $pass);
 }
 
-
-function test_addRemoveFeaturedExperiment() {
+function test_unhideExperiment() {
     
     $pass = true;
     
+    //test experiment with valid param
     $eid = 1;
+    unhideExperiment($eid);
     $experiment = getExperiment($eid);
-    $isFeatured = $experiment['featured'];
-    
-    // if the experiment is already featured,
-    // unfeature it and and test to see that its 
-    // 'featured' value is indeed 0 
-    if ( $isFeatured == 1 ) {
-          removeFeaturedExperiment($eid);
-          $experiment = getExperiment($eid);
-          if( $experiment['featured'] == 0) {
-               $pass = true;
-          } else {
-               $pass = false;
-          }
-     }
-     
-    // if the experiment is not featured,
-    // feature it and and test to see that its 
-    // 'featured' value is indeed 1     
-      if ( $isFeatured == 0 ) {
-          addFeaturedExperiment($eid);
-          $experiment = getExperiment($eid);
-          if( $experiment['featured'] == 1) {
-               $pass = true;
-          } else {
-               $pass = false;
-          }
-     }
-     
-     //test experiment with invalid param
-     $eid = -1;
-     $experiment = getExperiment($eid);
-     
-     if ($experiment != null) {
+    if($experiment) {
+          if ($experiment['hidden'] != 0) {
+                    $pass = false;
+          }          
+    } else {
+          return "check getExperiment function"; 
+    }
+          
+     //test experiment with invalid param    
+     $eid = -1; 
+     $experiment = unhideExperiment($eid);    
+     if ($experiment) {
           $pass = false;
-     }
-     
+     }     
+
+     printResult( __FUNCTION__, $pass);
+}
+
+function test_addFeaturedExperiment() {   
+       
+    $pass = true;
+    
+    //test experiment with valid param
+    $eid = 1;
+    addFeaturedExperiment($eid);
+    $experiment = getExperiment($eid);
+    if($experiment) {
+          if ($experiment['featured'] != 1) {
+                    $pass = false;
+          }          
+    } else {
+          return "check getExperiment function"; 
+    }
+          
+     //test experiment with invalid param    
+     $eid = -1; 
+     $experiment = addFeaturedExperiment($eid);    
+     if ($experiment) {
+          $pass = false;
+     }     
+
+     printResult( __FUNCTION__, $pass);
+}
+
+function test_removeFeaturedExperiment() {   
+       
+    $pass = true;
+    
+    //test experiment with valid param
+    $eid = 1;
+    removeFeaturedExperiment($eid);
+    $experiment = getExperiment($eid);
+    if($experiment) {
+          if ($experiment['featured'] != 0) {
+                    $pass = false;
+          }          
+    } else {
+          return "check getExperiment function"; 
+    }
+          
+     //test experiment with invalid param    
+     $eid = -1; 
+     $experiment = removeFeaturedExperiment($eid);    
+     if ($experiment) {
+          $pass = false;
+     }     
+
      printResult( __FUNCTION__, $pass);
 }
 
 function test_rateExperiment() {
-    
+
     $pass = true;
     
+    //test experiment with valid param
     $eid = 1;
+    removeFeaturedExperiment($eid);
     $experiment = getExperiment($eid);
-    $origRating = $experiment['rating'];
-    
-    
-    
-    if ( $isFeatured == 1 ) {
-          $experiment = getExperiment($eid);
-          if( $experiment['featured'] == 0) {
-               $pass = true;
-          } else {
-               $pass = false;
-          }
-     }
-     
-     //test experiment with invalid param
-     $eid = -1;
-     $experiment = getExperiment($eid);
-     
-     if ($experiment != null) {
+    if($experiment) {
+          if ($experiment['featured'] != 0) {
+                    $pass = false;
+          }          
+    } else {
+          return "check getExperiment function"; 
+    }
+          
+     //test experiment with invalid param    
+     $eid = -1; 
+     $experiment = removeFeaturedExperiment($eid);    
+     if ($experiment) {
           $pass = false;
-     }
-     
+     }     
+
      printResult( __FUNCTION__, $pass);
 }
-
-
 
 ?>
