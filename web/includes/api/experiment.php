@@ -61,25 +61,30 @@ function createExperiment($token, $name, $description, $fields, $req_name=1, $re
 }
 
 function getExperiment($eid) {
-    global $db;
+          global $db;
+     
+          $result = $db->query("SELECT private FROM users WHERE user_id = {$eid} LIMIT 0,1");
 
-    $result = $db->query("SELECT private FROM users WHERE user_id = {$eid} LIMIT 0,1");
+          $output = $db->query("SELECT experiments.*,
+               users.firstname,
+               users.lastname
+               FROM experiments,
+               users
+               WHERE experiments.owner_id = users.user_id AND experiments.experiment_id = {$eid}");
 
-    $output = $db->query("SELECT experiments.*,
-        users.firstname,
-        users.lastname
-        FROM experiments,
-        users
-        WHERE experiments.owner_id = users.user_id AND experiments.experiment_id = {$eid}");
-
-    //Filter private last names
-    if($result[0]['private']) {
-        $output[0]['lastname'] = substr(ucfirst($output[0]['lastname']), 0, 1) . '.';
-    }
-
-
-    return $output[0];
+          //Filter private last names
+          if(isset($result[0])){
+               if($result[0]['private']) {
+                    $output[0]['lastname'] = substr(ucfirst($output[0]['lastname']), 0, 1) . '.';
+               }
+          }
+          if(isset($output[0])){
+               return $output[0];
+          } else {
+               return array();
+          }
 }
+
 
 function updateExperiment($eid, $values) {
     global $db;
@@ -132,7 +137,7 @@ function unhideExperiment($eid) {
 function addFeaturedExperiment($eid) {
      global $db;
      
-     if(doesExperimentExist($eid) {
+     if(doesExperimentExist($eid)) {
                $db->query("UPDATE experiments SET featured = 1 WHERE experiment_id = {$eid}");
      
                $output = $db->query("SELECT name from experiments WHERE experiment_id = {$eid}");
@@ -149,61 +154,65 @@ function addFeaturedExperiment($eid) {
                updateTimeModifiedForExperiment($eid);
      
                return true;
-     }
-     
+     }   
      return false;
 }
+
 
 function removeFeaturedExperiment($eid) {
      global $db;
      
-     if(doesExperimentExist($eid) {
-     
-               $db->query("UPDATE experiments SET featured = 0 WHERE experiment_id = {$eid}");
-     
+     if(doesExperimentExist($eid)) {     
+               $output = $db->query("UPDATE experiments SET featured = 0 WHERE experiment_id = {$eid}");
+
                updateTimeModifiedForExperiment($eid);
      
                return true;
-     }
-     
-          return false;
-}
-
-function rateExperiment($eid, $value) {
-     global $db;
-     
-     if(doesExperimentExist($eid) {
-     
-               $db->query("UPDATE experiments SET rating = rating + {$value}, rating_votes = rating_votes + 1 WHERE experiment_id = {$eid}");
-               return true;          
-
-               }
-          
+     }    
      return false;
 }
 
+
+function rateExperiment($eid, $value) {
+     global $db;
+
+     if(doesExperimentExist($eid)) {
+               $db->query("UPDATE experiments SET rating = rating + {$value}, rating_votes = rating_votes + 1 WHERE experiment_id = {$eid}");
+     
+               return true;          
+     }        
+     return false;
+}
+
+
 function countNumberOfSessions($eid) {
 	global $db;
+
+     if(doesExperimentExist($eid)) {
+               $output = $db->query("SELECT COUNT(*) as `count` FROM experimentSessionMap, sessions WHERE sessions.finalized = 1 AND sessions.session_id = experimentSessionMap.session_id AND experimentSessionMap.experiment_id = {$eid} GROUP BY experimentSessionMap.experiment_id");
 	
-	$output = $db->query("SELECT COUNT(*) as `count` FROM experimentSessionMap, sessions WHERE sessions.finalized = 1 AND sessions.session_id = experimentSessionMap.session_id AND experimentSessionMap.experiment_id = {$eid} GROUP BY experimentSessionMap.experiment_id");
-	
-	if($db->numOfRows) {
-		return $output[0]['count'];
-	}
-	
-	return 0;
+               if($db->numOfRows) {
+                         return $output[0]['count'];
+               }	
+               return 0;
+     }        
+     return false;        
 }
+
 
 function countNumberOfContributors($eid) {
 	global $db;
 	
-	$output = $db->query("SELECT COUNT(DISTINCT sessions.owner_id) as `count` FROM experimentSessionMap, sessions WHERE sessions.session_id = experimentSessionMap.session_id AND experimentSessionMap.experiment_id = {$eid}");
+	if(doesExperimentExist($eid)) {
+               $output = $db->query("SELECT COUNT(DISTINCT sessions.owner_id) as `count` FROM experimentSessionMap, sessions WHERE sessions.session_id = experimentSessionMap.session_id AND experimentSessionMap.experiment_id = {$eid}");
 	
-	if($db->numOfRows) {
-		return $output[0]['count'];
-	}
+               if($db->numOfRows) {
+                         return $output[0]['count'];
+               }
 	
-	return 0;
+               return 0;
+     }        
+     return false;  
 }
 
 function getExperimentCollaborators($ownerid, $eid) {
@@ -657,12 +666,12 @@ function doesExperimentExist($eid) {
      global $db;
 
      //build string for query 
-     $sql = "SELECT eid FROM experiments WHERE experiment_id={$eid}";
+     $sql = "SELECT experiment_id FROM experiments WHERE experiment_id={$eid}";
      
      $output = $db->query($sql);
      
      if (isset($output[0])) {
-          if (isset($output['eid'])) {
+          if (isset($output[0]['experiment_id'])) {
                return true;
           }
      } 

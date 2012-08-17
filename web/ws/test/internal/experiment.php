@@ -13,10 +13,12 @@ require_once '../../../includes/config.php';
 
 
 test_getExperiment();
-test_hideUnhideExperiment();
-test_addRemoveFeaturedExperiment();
-
-
+test_hideExperiment();
+test_unhideExperiment();
+test_addFeaturedExperiment();
+test_removeFeaturedExperiment();
+test_countNumberOfSessions();
+test_countNumberOfContributors();
 
 function printResult( $functionVar, $passVar ) {
 
@@ -75,9 +77,8 @@ function test_hideExperiment() {
     }
           
      //test experiment with invalid param    
-     $eid = -1; 
-     $experiment = hideExperiment($eid);    
-     if ($experiment) {
+     $eid = -1;   
+     if (hideExperiment($eid)) {
           $pass = false;
      }     
 
@@ -101,9 +102,8 @@ function test_unhideExperiment() {
     }
           
      //test experiment with invalid param    
-     $eid = -1; 
-     $experiment = unhideExperiment($eid);    
-     if ($experiment) {
+     $eid = -1;   
+     if (unhideExperiment($eid)) {
           $pass = false;
      }     
 
@@ -127,9 +127,8 @@ function test_addFeaturedExperiment() {
     }
           
      //test experiment with invalid param    
-     $eid = -1; 
-     $experiment = addFeaturedExperiment($eid);    
-     if ($experiment) {
+     $eid = -1;   
+     if (addFeaturedExperiment($eid)) {
           $pass = false;
      }     
 
@@ -144,9 +143,10 @@ function test_removeFeaturedExperiment() {
     $eid = 1;
     removeFeaturedExperiment($eid);
     $experiment = getExperiment($eid);
+    
     if($experiment) {
           if ($experiment['featured'] != 0) {
-                    $pass = false;
+               $pass = false;
           }          
     } else {
           return "check getExperiment function"; 
@@ -154,38 +154,55 @@ function test_removeFeaturedExperiment() {
           
      //test experiment with invalid param    
      $eid = -1; 
-     $experiment = removeFeaturedExperiment($eid);    
-     if ($experiment) {
+     if (removeFeaturedExperiment($eid)) {
           $pass = false;
      }     
 
      printResult( __FUNCTION__, $pass);
 }
 
-function test_rateExperiment() {
+function test_countNumberOfSessions() {
 
     $pass = true;
     
     //test experiment with valid param
     $eid = 1;
-    removeFeaturedExperiment($eid);
-    $experiment = getExperiment($eid);
-    if($experiment) {
-          if ($experiment['featured'] != 0) {
-                    $pass = false;
-          }          
-    } else {
-          return "check getExperiment function"; 
-    }
-          
+
+     $numberOfSessions = countNumberOfSessions($eid);
+     if (($numberOfSessions < 0) 
+          || !(is_numeric($numberOfSessions))){
+                    $pass = false;                      
+     }
+
      //test experiment with invalid param    
-     $eid = -1; 
-     $experiment = removeFeaturedExperiment($eid);    
-     if ($experiment) {
+     $eid = -1;   
+     if (countNumberOfSessions($eid)) {
           $pass = false;
      }     
 
      printResult( __FUNCTION__, $pass);
 }
 
+
+function test_countNumberOfContributors() {
+
+    $pass = true;
+    
+    //test experiment with valid param
+    $eid = 1;
+
+     $numberOfContributors = countNumberOfContributors($eid);
+     if (($numberOfContributors < 0) 
+          || !(is_numeric($numberOfContributors))){
+                    $pass = false;                      
+     }
+
+     //test experiment with invalid param    
+     $eid = -1;   
+     if (countNumberOfContributors($eid)) {
+          $pass = false;
+     }     
+
+     printResult( __FUNCTION__, $pass);
+}
 ?>
