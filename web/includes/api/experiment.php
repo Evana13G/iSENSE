@@ -502,12 +502,20 @@ function getTagsForExperiment($eid) {
 }
 
 function updateTimeModifiedForExperiment($eid) {
-    global $db;
+
+    if(doesExperimentExist($eid)) {
+
+          global $db;
     
-    $sql = "UPDATE `experiments` SET experiments.timemodified = NOW() WHERE experiments.experiment_id = {$eid}";
-    $db->query($sql);
+          $sql = "UPDATE `experiments` SET experiments.timemodified = NOW() WHERE experiments.experiment_id = {$eid}";
     
-    return true;
+          $db->query($sql);
+    
+          if($db->numOfRows) {
+               return true;
+          }
+     }
+     return false;
 }
 
 function getAllExperiments() {
@@ -579,23 +587,38 @@ function getExpOwner($sid) {
 }
 
 function closeExperiment($eid){
-    global $db;
-    
-    $sql = "UPDATE experiments SET closed=1 where experiment_id={$eid}";
 
-    $query = $db->query($sql);
+     if(doesExperimentExist($eid)) {     
 
-    return true;
+          global $db;
     
+          $sql = "UPDATE experiments SET closed=1 where experiment_id={$eid}";
+
+          $query = $db->query($sql);
+
+          if($db->numOfRows) {
+               updateTimeModifiedForExperiment($eid);
+               return true;
+          }
+      }    
+      return false;
 }
 
 function uncloseExperiment($eid){
-    global $db;
-    $sql = "UPDATE experiments SET closed=0 where experiment_id={$eid}";
 
-    $query = $db->query($sql);
+     if(doesExperimentExist($eid)) {   
+          global $db;
+          
+          $sql = "UPDATE experiments SET closed=0 where experiment_id={$eid}";
 
-    return true;
+          $query = $db->query($sql);
+          
+          if($db->numOfRows) {
+               updateTimeModifiedForExperiment($eid);
+               return true;
+          }
+    }
+    return false;
 }
 
 function experimentClosed($eid){
@@ -640,24 +663,37 @@ function updateExperimentImage($url,$eid){
 
 //Promote an experiment as iSENSE recommended.
 function recommendExperiment($eid){
-    global $db;
 
-    $sql = "UPDATE experiments SET recommended=1 WHERE experiment_id={$eid}";
+    if(doesExperimentExist($eid)) {  
+          global $db;
 
-    $output = $db->query($sql);
+          $sql = "UPDATE experiments SET recommended=1 WHERE experiment_id={$eid}";
 
-    return true;
+          $output = $db->query($sql);
+
+          if($db->numOfRows) {
+               updateTimeModifiedForExperiment($eid);
+               return true;
+          }
+      }    
+      return false;    
 }
 
 //Demote an experiment from iSENSE recommended status.
 function unrecommendExperiment($eid){
-    global $db;
+    if(doesExperimentExist($eid)) { 
+          global $db;
 
-    $sql = "UPDATE experiments SET recommended=0 WHERE experiment_id={$eid}";
+          $sql = "UPDATE experiments SET recommended=0 WHERE experiment_id={$eid}";
 
-    $output = $db->query($sql);
+          $output = $db->query($sql);
 
-    return true;
+          if($db->numOfRows) {
+               updateTimeModifiedForExperiment($eid);
+               return true;
+          }
+      }    
+      return false;           
 }
 
 function doesExperimentExist($eid) {
